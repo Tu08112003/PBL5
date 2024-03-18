@@ -1,0 +1,28 @@
+{
+  "name": "serverapp",
+  "version": "1.0.0",
+  "description": "",
+  "main": "Server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MayMay203/ServerAppPBL05.git"
+  },
+  "keywords": [
+    "nodejs",
+    "serverapp"
+  ],
+  "author": "NhungLe",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/MayMay203/ServerAppPBL05/issues"
+  },
+  "homepage": "https://github.com/MayMay203/ServerAppPBL05#readme",
+  "dependencies": {
+    "express": "^4.18.3",
+    "nodemon": "^3.1.0"
+  }
+}
