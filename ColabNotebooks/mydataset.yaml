@@ -1,0 +1,4 @@
+train: /content/drive/MyDrive/ColabNotebooks/train
+val: /content/drive/MyDrive/ColabNotebooks/train
+nc: 5
+names: ['chair','table','person','door','obstacle']
