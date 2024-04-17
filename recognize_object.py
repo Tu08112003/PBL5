@@ -82,6 +82,6 @@ class ObjectDetection:
             raise ValueError("URL must be provided.")
 
 # Sử dụng ESP32-CAM qua URL
-url = 'http://10.10.58.255/cam-custom.jpg'  # Đường link ảnh từ ESP32
+url = 'http://192.168.43.179/cam-custom.jpg'  # Đường link ảnh từ ESP32
 detector = ObjectDetection(url=url)
 detector()
