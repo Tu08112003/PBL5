@@ -1,31 +1,52 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const http = require('http');
+const WebSocket = require('ws');
 
 const app = express();
+const server = http.createServer(app);
+const wss = new WebSocket.Server({ server });
 
-// Sử dụng bodyParser để phân tích dữ liệu từ POST request
+let locationData = null;
+
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json());
 
-let locationData = []; // Biến để lưu trữ dữ liệu vị trí
+// Lắng nghe sự kiện kết nối mới từ client
+wss.on('connection', (ws) => {
+    // Gửi dữ liệu vị trí hiện tại cho client mới kết nối
+    if (locationData !== null) {
+        ws.send(JSON.stringify(locationData));
+    }
 
-app.post('/update_location', (req, res) => {
+    // Lắng nghe sự kiện đóng kết nối từ client
+    ws.on('close', () => {
+        console.log('Client disconnected');
+    });
+});
+
+// Hàm gửi dữ liệu mới đến tất cả các client thông qua WebSocket
+function sendLocationUpdate() {
+    wss.clients.forEach(function each(client) {
+        if (client.readyState === WebSocket.OPEN) {
+            client.send(JSON.stringify(locationData));
+        }
+    });
+}
+
+app.post('/send_location', (req, res) => {
     const { latitude, longitude } = req.body;
     console.log('Received location data:', { latitude, longitude });
-
-    // Lưu dữ liệu vị trí vào biến locationData
-    locationData.push({ latitude, longitude });
-
-    // Phản hồi với mã trạng thái 200 (OK)
+    locationData = { latitude, longitude };
+    // Gửi thông báo cập nhật đến tất cả các client
+    sendLocationUpdate();
     res.status(200).send('Location data received successfully');
 });
 
 app.get('/get_location', (req, res) => {
-    // Trả về dữ liệu vị trí đã lưu
     res.status(200).json(locationData);
 });
 
-const PORT = 3000
-app.listen(PORT, () => {
+const PORT = 3000;
+server.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });
