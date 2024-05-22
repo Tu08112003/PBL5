@@ -4,6 +4,9 @@ import 'package:flutter/material.dart';
 import 'follow_page.dart';
 
 class EditProfileDialog extends StatelessWidget {
+  final String username;
+
+  EditProfileDialog({required this.username});
   @override
   Widget build(BuildContext context) {
     return Dialog(
@@ -44,15 +47,44 @@ class EditProfileDialog extends StatelessWidget {
                           backgroundImage: AssetImage('assets/images/avatar.jpg'), // Đường dẫn đến hình ảnh đại diện
                         ),
                         SizedBox(height: 10),
-                        Text(
-                          'Tên người dùng',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
+                        // Text(
+                        //   'Họ tên',
+                        //   style: TextStyle(
+                        //     fontSize: 18,
+                        //     fontWeight: FontWeight.bold,
+                        //   ),
+                        // ),
+                        TextFormField(
+                          initialValue: 'Họ tên',
+                          decoration: InputDecoration(
+                            labelText: 'Họ tên',
+                            border: OutlineInputBorder(),
                           ),
+                          onChanged: (newValue) {
+                            // Cập nhật giá trị username khi người dùng thay đổi
+                            // Có thể lưu giá trị này vào biến hoặc thực hiện các xử lý khác
+                          },
                         ),
                         SizedBox(height: 20),
-                        SizedBox(height: 150),
+                        // Text(
+                        //   username,
+                        //   style: TextStyle(
+                        //     fontSize: 18,
+                        //     fontWeight: FontWeight.bold,
+                        //   ),
+                        // ),
+                        TextFormField(
+                          initialValue: username,
+                          decoration: InputDecoration(
+                            labelText: 'Nhập email/sđt',
+                            border: OutlineInputBorder(),
+                          ),
+                          onChanged: (newValue) {
+                            // Cập nhật giá trị username khi người dùng thay đổi
+                            // Có thể lưu giá trị này vào biến hoặc thực hiện các xử lý khác
+                          },
+                        ),
+                        SizedBox(height: 20),
                         // ElevatedButton(
                         //   onPressed: () {
                         //     // Xử lý sự kiện khi nút được nhấn
@@ -116,7 +148,7 @@ class EditProfileDialog extends StatelessWidget {
                         );
                       },
                       child: Text(
-                        'Theo dõi',
+                        'Lưu thay đổi',
                         style: TextStyle(
                           fontSize: 18,
                           fontFamily: 'Inter',

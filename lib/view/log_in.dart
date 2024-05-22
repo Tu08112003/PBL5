@@ -1,10 +1,50 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:iseeapp2/view/home_page.dart';
 import 'package:iseeapp2/view/sign_up.dart';
 
-class LogIn extends StatelessWidget {
-  const LogIn({Key? key}) : super(key: key);
+import '../Database/DatabaseUser.dart';
+import '../session/SessionManager.dart';
+class LogIn extends StatefulWidget {
+
+  const LogIn({super.key});
+
+  @override
+  State<LogIn> createState() => _LogInState();
+}
+
+class _LogInState extends State<LogIn> {
+
+  final _formKey = GlobalKey<FormState>();
+  String username = '';
+  String password = '';
+  bool isObscured = true;
+  final TextEditingController _controller = TextEditingController();
+  String _username = '';
+
+  @override
+  void initState() {
+    super.initState();
+    isObscured = true;
+    // _loadSession();
+  }
+
+  _loadSession() async {
+    String? username = await SessionManager.getSession('username');
+    setState(() {
+      _username = username ?? '';
+    });
+  }
+
+  _saveSession() async {
+    print("-------Trước khi lưu----username"+_username + "-------" + _controller.text);
+    await SessionManager.saveSession('username', _controller.text);
+    setState(() {
+      _username = _controller.text;
+    });
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -122,13 +162,17 @@ class LogIn extends StatelessWidget {
                           Expanded(
                             child: Center(
                               child: TextFormField(
+                                controller: _controller,
                                 style: TextStyle(fontSize: 18),
                                 decoration: InputDecoration(
-                                  hintText: 'Tên đăng nhập', // Đặt "Tên đăng nhập" làm hint
+                                  hintText: 'Email/số điện thoại', // Đặt "Tên đăng nhập" làm hint
                                   hintStyle: TextStyle(color: Colors.grey), // Đổi màu chữ hint thành màu xám
                                   border: InputBorder.none,
                                   contentPadding: EdgeInsets.symmetric(horizontal: 4),
                                 ),
+                                onChanged: (value) {
+                                  username = value; // Update ipServer when text changes
+                                },
                               ),
                             ),
                           ),
@@ -149,21 +193,32 @@ class LogIn extends StatelessWidget {
                       child: Row(
                         children: [
                           Padding(
-                            padding: const EdgeInsets.only(left: 17),
-                            child: Icon(Icons.lock), // Icon user
+                            padding: const EdgeInsets.only(left: 5),
+                            child: IconButton(
+                              icon: Icon(
+                                isObscured ? Icons.lock : Icons.lock_open,
+                              ),
+                              onPressed: () {
+                                setState(() {
+                                  isObscured = !isObscured;
+                                });
+                              },
+                            ),
                           ),
-                          SizedBox(width: 10), // Khoảng cách giữa icon và chữ
                           Expanded(
                             child: Center(
                               child: TextFormField(
                                 style: TextStyle(fontSize: 18),
-                                obscureText: true, // Ẩn mật khẩu
+                                obscureText: isObscured, // Ẩn mật khẩu
                                 decoration: InputDecoration(
                                   hintText: 'Mật khẩu', // Đặt "Tên đăng nhập" làm hint
                                   hintStyle: TextStyle(color: Colors.grey), // Đổi màu chữ hint thành màu xám
                                   border: InputBorder.none,
                                   contentPadding: EdgeInsets.symmetric(horizontal: 4),
                                 ),
+                                onChanged: (value) {
+                                  password = value; // Update ipServer when text changes
+                                },
                               ),
                             ),
                           ),
@@ -178,7 +233,7 @@ class LogIn extends StatelessWidget {
                       height: 50,
                       child: ElevatedButton(
                         onPressed: () {
-                          // Xử lý sự kiện khi nút được nhấn
+                          handleLogIn();
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Color(0xFF0D5E37), // Đặt màu nền của nút là màu xanh
@@ -207,8 +262,8 @@ class LogIn extends StatelessWidget {
           ),
           // SizedBox(height: 20),
           Positioned(
-            right: 80,
-            bottom: 280, // Điều chỉnh vị trí dưới cùng bên phải
+            right: 50,
+            bottom: 220, // Điều chỉnh vị trí dưới cùng bên phải
             child: GestureDetector(
               onTap: () {
                 // Xử lý sự kiện khi quên mật khẩu được nhấn
@@ -226,8 +281,8 @@ class LogIn extends StatelessWidget {
             ),
           ),
           Positioned(
-            right: 180,
-            bottom: 220, // Điều chỉnh vị trí dưới cùng bên phải
+            right: 150,
+            bottom: 170, // Điều chỉnh vị trí dưới cùng bên phải
             child: GestureDetector(
               onTap: () {
                 // Xử lý sự kiện khi quên mật khẩu được nhấn
@@ -244,8 +299,8 @@ class LogIn extends StatelessWidget {
             ),
           ),
           Positioned(
-            right: 120,
-            bottom: 120,
+            right: 100,
+            bottom: 100,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -298,7 +353,7 @@ class LogIn extends StatelessWidget {
             ),
           ),
           Positioned(
-            right: 60,
+            right: 30,
             bottom: 20,
             child: Row(
               // mainAxisAlignment: MainAxisAlignment.center,
@@ -341,5 +396,38 @@ class LogIn extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  Future<void> handleLogIn() async {
+    final databaseHelper = DatabaseUser();
+    if(username == '' || password == ''){
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          backgroundColor: Colors.pink,
+          content: Text('Hãy nhập đủ nội dung'),
+        ),
+      );
+    }
+    else{
+      var checkLogIn = await databaseHelper.isCorrectUser(username, password) ;
+      if(!checkLogIn)
+      {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            backgroundColor: Colors.pink,
+            content: Text('Tên đăng nhập hoặc mật khẩu ko đúng'),
+          ),
+        );
+      }
+      else {
+        _saveSession();
+        print('========username:'+_username);
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => HomePage()),
+        );
+      }
+
+    }
   }
 }

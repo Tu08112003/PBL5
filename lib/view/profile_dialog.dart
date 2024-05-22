@@ -1,10 +1,39 @@
 import 'package:flutter/material.dart';
 
+import '../session/SessionManager.dart';
 import 'change_password_dialog.dart';
 import 'edit_profile_dialog.dart';
 import 'log_in.dart';
+class ProfileDialog extends StatefulWidget {
 
-class ProfileDialog extends StatelessWidget {
+  const ProfileDialog({super.key});
+
+  @override
+  State<ProfileDialog> createState() => _ProfileDialogState();
+}
+
+class _ProfileDialogState extends State<ProfileDialog> {
+  final TextEditingController _controller = TextEditingController();
+
+  _clearSession() async {
+    await SessionManager.removeSession('username');
+    // setState(() {
+    //   _username = '';
+    //   // _controller.clear();
+    // });
+  }
+  String _username = '';
+  void initState() {
+    super.initState();
+    _loadSession();
+    print("==================vo dialog profile page roi ne, username = " + _username);
+  }
+  _loadSession() async {
+    String? username = await SessionManager.getSession('username');
+    setState(() {
+      _username = username ?? '';
+    });
+  }
   @override
   Widget build(BuildContext context) {
     return Dialog(
@@ -43,7 +72,7 @@ class ProfileDialog extends StatelessWidget {
                 ),
                 SizedBox(height: 10),
                 Text(
-                  'Linh Nhi',
+                  'Username',
                   style: TextStyle(
                     fontSize: 24,
                     color: Color(0xFF0D5E37),
@@ -52,7 +81,7 @@ class ProfileDialog extends StatelessWidget {
                 ),
                 SizedBox(height: 10),
                 Text(
-                  'nguyenlinhnhi102@gmail.com',
+                  _username,
                   style: TextStyle(
                     fontSize: 18,
                     color: Color(0xFF0D5E37),
@@ -99,7 +128,7 @@ class ProfileDialog extends StatelessWidget {
   Widget _buildButton(String label, BuildContext context, String typeButton) {
     return ElevatedButton(
       onPressed: () {
-        Navigator.of(context).pop(); // Đóng dialog hiện tại
+        // Navigator.of(context).pop(); // Đóng dialog hiện tại
         if(typeButton == "changePassword"){
           showDialog(
             context: context,
@@ -112,17 +141,10 @@ class ProfileDialog extends StatelessWidget {
           showDialog(
             context: context,
             builder: (BuildContext context) {
-              return EditProfileDialog(); // Hiển thị dialog
+              return EditProfileDialog(username: _username); // Hiển thị dialog
             },
           );
         }
-        // Xử lý sự kiện khi nút được nhấn
-        showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return ProfileDialog(); // Hiển thị dialog
-          },
-        );
       },
       style: ElevatedButton.styleFrom(
         backgroundColor: Color(0xFFDEF9EC),
@@ -144,6 +166,8 @@ class ProfileDialog extends StatelessWidget {
   Widget _buildMainButton(String label, BuildContext context) {
     return ElevatedButton(
       onPressed: () {
+        print('truoc khi clear ne------========username:'+_username);
+        _clearSession;
         Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => LogIn()),

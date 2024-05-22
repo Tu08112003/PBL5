@@ -2,8 +2,14 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import 'follow_page.dart';
+class DetailDialog extends StatefulWidget {
+  const DetailDialog({Key? key}) : super(key: key);
 
-class DetailDialog extends StatelessWidget {
+  @override
+  State<DetailDialog> createState() => _DetailDialogState();
+}
+
+class _DetailDialogState extends State<DetailDialog> {
   @override
   Widget build(BuildContext context) {
     return Dialog(
@@ -20,11 +26,11 @@ class DetailDialog extends StatelessWidget {
     return Stack(
       children: [
         Container(
-          constraints: BoxConstraints(maxHeight: 450, maxWidth: 300),
+          constraints: BoxConstraints(maxHeight: 370, maxWidth: 300),
           child: Stack(
             children: [
               Container(
-                padding: EdgeInsets.all(2),
+                // padding: EdgeInsets.all(2),
                 decoration: BoxDecoration(
                   color: Colors.white,
                   shape: BoxShape.rectangle,
@@ -32,11 +38,11 @@ class DetailDialog extends StatelessWidget {
                 ),
                 child: Column(
                   // mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.center,
+                  // crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Expanded(
                       child: Container(
-                        height: 5,
+                        height: 1,
                       ), // Container trống để tạo khoảng trống ở trên cùng
                     ),
                     CircleAvatar(
@@ -44,15 +50,47 @@ class DetailDialog extends StatelessWidget {
                       backgroundImage: AssetImage('assets/images/avatar.jpg'), // Đường dẫn đến hình ảnh đại diện
                     ),
                     SizedBox(height: 10),
-                    Text(
-                      'Tên người dùng',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        // Spacer(),
+                        Text(
+                          'Bảo Châu ',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        SizedBox(height: 10),
+                        GestureDetector(
+                          onTap: () {
+                            // Handle the icon tap event here
+                            print('Icon tapped!');
+                            // You can add your custom logic here, like navigating to another screen or performing an action
+                          },
+                          child: Icon(Icons.edit),
+                        ),
+                        // Spacer(),
+                      ],
+                    ),
+                    SizedBox(height: 10),
+
+                    ClipRRect(
+                      borderRadius: BorderRadius.only(
+                        bottomLeft: Radius.circular(20),
+                        bottomRight: Radius.circular(20),
+                      ),
+                      child: Container(
+                        height: 200,
+                        width: 300,
+                        decoration: BoxDecoration(
+                          image: DecorationImage(
+                            image: AssetImage('assets/images/map.png'),
+                            fit: BoxFit.cover,
+                          ),
+                        ),
                       ),
                     ),
-                    SizedBox(height: 20),
-                    SizedBox(height: 150),
                     // ElevatedButton(
                     //   onPressed: () {
                     //     // Xử lý sự kiện khi nút được nhấn
@@ -86,7 +124,7 @@ class DetailDialog extends StatelessWidget {
         ),
         Positioned(
           bottom: 20,
-          right: 70,
+          right: 50,
           child: Material(
             elevation: 4, // Độ nổi bật của nút
             borderRadius: BorderRadius.circular(30),

@@ -108,7 +108,7 @@ import 'package:latlong2/latlong.dart';
 import 'package:sqflite/sqflite.dart';
 
 // Import database helper class
-import '../DatabaseHelper.dart';
+import '../Database/DatabaseLocation.dart';
 
 // Replace with your actual API URL (if applicable)
 final String apiUrl = 'http://192.168.43.96:3000/get_location';
@@ -126,7 +126,7 @@ class HistoryPage extends StatefulWidget {
 class _HistoryPageState extends State<HistoryPage> {
   final MapController mapController = MapController(); // Tạo MapController
   List<LatLng> _locations = [];
-  final databaseHelper = DatabaseHelper(); // Create database helper instance
+  final databaseHelper = DatabaseLocation(); // Create database helper instance
 
   @override
   void initState() {
