@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:iseeapp2/Database/DatabaseUser.dart';
 import 'package:iseeapp2/QRCode/QRScan.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:sqflite/sqlite_api.dart';
 
 import '../session/SessionManager.dart';
 import 'detail_dialog.dart';
@@ -23,11 +25,14 @@ class _HomePageState extends State<HomePage> {
   String address = '';
   final MapController mapController = MapController();
   String _username = '';
+  final databaseUserHelper = DatabaseUser();
+  late Future<List<int>> _idCaneFuture;
   @override
   void initState() {
     super.initState();
     _loadSession();
     print("==================vo Home page roi ne, username = " + _username);
+
     _requestLocationPermission();
     _getCurrentLocation();
   }
@@ -50,13 +55,26 @@ class _HomePageState extends State<HomePage> {
     print("==================vo Home page roi ne, username = " + _username + '------------------' + username!);
     setState(() {
       _username = username ?? '';
+      _idCaneFuture = databaseUserHelper.getIdCaneByUsername(_username);
     });
+    _idCaneFuture.then((idCanes) {
+      print("++++ +++++ idcane +++++ ${idCanes.join(', ')}");
+    }).catchError((error) {
+      print("Error: $error");
+    });
+
   }
+  Future<void> printIdCane() async {
+    List<int> idCanes = await _idCaneFuture;
+    print("++++ +++++ idcane +++++ ${idCanes.join(', ')}");
+  }
+
 
 
 
   @override
   Widget build(BuildContext context) {
+    _getCurrentLocation();
     return Scaffold(
       backgroundColor: const Color(0xFFB1FFD9),
 
@@ -164,7 +182,7 @@ class _HomePageState extends State<HomePage> {
             child: Column(
               children: [
                 SizedBox(
-                  height: 665,
+                  height: 677,
                   width: 450,
                   child: Stack(
                     children: [
@@ -233,65 +251,83 @@ class _HomePageState extends State<HomePage> {
       bottomNavigationBar: PreferredSize(
         preferredSize: Size.fromHeight(150),
         child: BottomAppBar(
-
           color: const Color(0xFFB1FFD9),
-          // alignment: Alignment.bottomCenter,
-
           height: 100,
-          child: SizedBox(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Ink(
-                  decoration: ShapeDecoration(
-                    color: Colors.transparent,
-                    shape: CircleBorder(),
-                  ),
-                  child: InkWell(
-                    onTap: () {
-                      showDialog(
-                        context: context,
-                        builder: (BuildContext context) {
-                          return DetailDialog(); // Hiển thị dialog
-                        },
-                      );
-                    },
-                    child: Container(
-                      width: 64,
-                      height: 64,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        image: DecorationImage(
-                          image: AssetImage('assets/images/avatar.jpg'),
-                          fit: BoxFit.cover,
+          child: FutureBuilder<List<int>>(
+            future: _idCaneFuture,
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return Center(child: CircularProgressIndicator());
+              } else if (snapshot.hasError) {
+                return Center(child: Text('Error: ${snapshot.error}'));
+              } else {
+                final idCanes = snapshot.data  ?? [];
+                return Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    for (var idCane in idCanes)
+                      if (idCane > 0)
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                          child: Ink(
+                            decoration: ShapeDecoration(
+                              shape: CircleBorder(),
+                            ),
+                            child: InkWell(
+                              onTap: () {
+                                showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return DetailDialog(); // Hiển thị dialog
+                                  },
+                                );
+                              },
+                              child: Container(
+                                width: 64,
+                                height: 64,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  image: DecorationImage(
+                                    image: AssetImage('assets/images/chiMinh.jpg'),
+                                    fit: BoxFit.cover,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
                         ),
+                        SizedBox(width: 40),
+                    FloatingActionButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => QRScan()),
+                        );
+                      },
+                      child: Icon(
+                        Icons.add,
+                        size: 30,
+                        color: const Color(0xFFFFFFFF),
                       ),
+                      backgroundColor: const Color(0xFF0D5E37),
+                      shape: CircleBorder(),
                     ),
-                  ),
-                ),
-                SizedBox(width: 40),
-                FloatingActionButton(
-                  onPressed: () {
-
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => QRScan()),
-                    );
-                  },
-                  child: Icon(
-                    Icons.add,
-                    size: 30,
-                    color: const Color(0xFFFFFFFF),
-                  ),
-                  backgroundColor: const Color(0xFF0D5E37),
-                  shape: CircleBorder(),
-                ),
-              ],
-            ),
+                    SizedBox(width: 40),
+                  ],
+                );
+              }
+            },
           ),
         ),
       ),
+
     );
+  }
+
+  Future<List<int>> fetchIdCane() async {
+    // Thay đổi đoạn code dưới đây để phù hợp với cách bạn lấy dữ liệu từ cơ sở dữ liệu của bạn
+    // Đây chỉ là một ví dụ giả định
+    return [1, 2, 0, 3, 4]; // Giả sử đây là danh sách các idCane
   }
 
   Future<void> _requestLocationPermission() async {

@@ -344,7 +344,8 @@ class _SignUpState extends State<SignUp> {
           );
         }
         else{
-          databaseHelper.addUser(username, password);
+          databaseHelper.addUser(username, password, null);
+          _showSuccessSnackBar();
           print("============THÀNH CÔNG===============");
           Navigator.push(
             context,
@@ -363,5 +364,14 @@ class _SignUpState extends State<SignUp> {
       }
     }
 
+  }
+  void _showSuccessSnackBar() {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Đăng ký thành công!'),
+        duration: Duration(seconds: 2),
+        backgroundColor: Colors.green,
+      ),
+    );
   }
 }

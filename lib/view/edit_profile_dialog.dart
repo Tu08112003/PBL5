@@ -1,12 +1,18 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:iseeapp2/Database/DatabaseUser.dart';
 
+import '../session/SessionManager.dart';
 import 'follow_page.dart';
 
 class EditProfileDialog extends StatelessWidget {
-  final String username;
-
+  String username;
+  String name = "";
+  String newUsername = "";
+  final databaseUserHelper = DatabaseUser();
   EditProfileDialog({required this.username});
+  // late final user = databaseUserHelper.getUserByUsername(username);
+
   @override
   Widget build(BuildContext context) {
     return Dialog(
@@ -27,7 +33,7 @@ class EditProfileDialog extends StatelessWidget {
             child: Stack(
                 children: [
                   Container(
-                    padding: EdgeInsets.all(20),
+                    // padding: EdgeInsets.all(20),
                     decoration: BoxDecoration(
                       color: Colors.white,
                       shape: BoxShape.rectangle,
@@ -39,14 +45,14 @@ class EditProfileDialog extends StatelessWidget {
                       children: [
                         Expanded(
                           child: Container(
-                            height: 5,
+                            height: 1,
                           ), // Container trống để tạo khoảng trống ở trên cùng
                         ),
                         CircleAvatar(
                           radius: 50,
                           backgroundImage: AssetImage('assets/images/avatar.jpg'), // Đường dẫn đến hình ảnh đại diện
                         ),
-                        SizedBox(height: 10),
+                        SizedBox(height: 20),
                         // Text(
                         //   'Họ tên',
                         //   style: TextStyle(
@@ -54,15 +60,44 @@ class EditProfileDialog extends StatelessWidget {
                         //     fontWeight: FontWeight.bold,
                         //   ),
                         // ),
-                        TextFormField(
-                          initialValue: 'Họ tên',
-                          decoration: InputDecoration(
-                            labelText: 'Họ tên',
-                            border: OutlineInputBorder(),
-                          ),
-                          onChanged: (newValue) {
-                            // Cập nhật giá trị username khi người dùng thay đổi
-                            // Có thể lưu giá trị này vào biến hoặc thực hiện các xử lý khác
+                        FutureBuilder<UserRecord?>(
+                          future: databaseUserHelper.getUserByUsername(username),
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState == ConnectionState.waiting) {
+                              return Center(child: CircularProgressIndicator());
+                            } else if (snapshot.hasError) {
+                              return Center(child: Text('Error: ${snapshot.error}'));
+                            } else {
+                              var user = snapshot.data!;
+                              return Container(
+                                width: 240,
+                                child: TextFormField(
+                                  initialValue: user.name ?? 'Họ tên',
+                                  decoration: InputDecoration(
+                                    labelText: 'Họ tên',
+                                    border: OutlineInputBorder(
+                                      borderSide: BorderSide(
+                                        color: Color(0xFF072516),
+                                      ),
+                                    ),
+                                    focusedBorder: OutlineInputBorder(
+                                      borderSide: BorderSide(
+                                        color: Color(0xFF0D5E37),
+                                      ),
+                                    ),
+                                    errorBorder: OutlineInputBorder(
+                                      borderSide: BorderSide(
+                                        color: Colors.red,
+                                      ),
+                                    ),
+                                    labelStyle: TextStyle(color: Color(0xFF072516)),
+                                  ),
+                                  onChanged: (newValue) {
+                                    name = newValue;
+                                  },
+                                ),
+                              );
+                            }
                           },
                         ),
                         SizedBox(height: 20),
@@ -73,18 +108,40 @@ class EditProfileDialog extends StatelessWidget {
                         //     fontWeight: FontWeight.bold,
                         //   ),
                         // ),
-                        TextFormField(
-                          initialValue: username,
-                          decoration: InputDecoration(
-                            labelText: 'Nhập email/sđt',
-                            border: OutlineInputBorder(),
+                        Container(
+                          width: 240,
+                          child: TextFormField(
+                            initialValue: username,
+                            decoration: InputDecoration(
+                              labelText: 'Nhập email/sđt',
+                              labelStyle: TextStyle(
+                                color: Color(0xFF072516),
+                              ),
+                              border: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                  color: Color(0xFF0D5E37),
+                                ),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                  color: Color(0xFF0D5E37),
+                                ),
+                              ),
+                              errorBorder: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                  color: Colors.red,
+                                ),
+                              ),
+                            ),
+                            style: TextStyle(
+                              color: Color(0xFF072516),
+                            ),
+                            onChanged: (newValue) {
+                              newUsername = newValue;
+                            },
                           ),
-                          onChanged: (newValue) {
-                            // Cập nhật giá trị username khi người dùng thay đổi
-                            // Có thể lưu giá trị này vào biến hoặc thực hiện các xử lý khác
-                          },
                         ),
-                        SizedBox(height: 20),
+                        SizedBox(height: 100),
                         // ElevatedButton(
                         //   onPressed: () {
                         //     // Xử lý sự kiện khi nút được nhấn
@@ -142,10 +199,7 @@ class EditProfileDialog extends StatelessWidget {
                     padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                     child: GestureDetector(
                       onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => FollowPage()),
-                        );
+                        _handleSaveChangeProfile(context);
                       },
                       child: Text(
                         'Lưu thay đổi',
@@ -166,4 +220,46 @@ class EditProfileDialog extends StatelessWidget {
     );
 
   }
+  void _showSuccessSnackBar(BuildContext context) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Lưu thành công!'),
+        duration: Duration(seconds: 2),
+        backgroundColor: Colors.green,
+      ),
+    );
+  }
+  void _handleSaveChangeProfile(BuildContext context) {
+    print("+++++++ lưu name = " + name);
+
+    if (newUsername == ''){
+      if(name != ""){
+        databaseUserHelper.updateUser(username,null, null, null, name);
+      }
+      else{
+        databaseUserHelper.updateUser(username,null, null, null, null);
+      }
+    }
+    else{
+      if(name != ""){
+        databaseUserHelper.updateUser(username,newUsername, null, null, name);
+        username = newUsername;
+        print("-------Trước khi lưu----username1"+newUsername + "====" +username + "-------" );
+        SessionManager.removeSession('username');
+        SessionManager.saveSession('username', username);
+      }
+      else{
+        databaseUserHelper.updateUser(username,newUsername, null, null, null);
+        username = newUsername;
+        print("-------Trước khi lưu----username2"+newUsername + "====" +username + "-------" );
+        SessionManager.removeSession('username');
+        SessionManager.saveSession('username', username);
+      }
+    }
+    _showSuccessSnackBar(context);
+    Navigator.of(context).pop();
+
+  }
 }
+
+

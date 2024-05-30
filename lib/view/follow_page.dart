@@ -80,7 +80,7 @@ class _FollowPageState extends State<FollowPage> {
                 Spacer(), // Keep trailing Spacer for right alignment
                 CircleAvatar(
                   radius: 20,
-                  backgroundImage: AssetImage('assets/images/avatar.jpg'),
+                  backgroundImage: AssetImage('assets/images/chiMinh.jpg'),
                 ),
                 SizedBox(width: 10), // Khoảng cách giữa avatar và tên
                 Text(
@@ -546,7 +546,7 @@ class _FollowPageState extends State<FollowPage> {
     //                 // timestamp: DateTime.now().millisecondsSinceEpoch,
     //                 timestamp: datetime,
     //               );
-    //               final databaseHelper = DatabaseLocation();
+    //            //   final databaseHelper = DatabaseLocation();
     //               databaseHelper.addLocation(locationRecord.latitude, locationRecord.longitude, locationRecord.timestamp, 1);
     //               print("lưu xong");
     //             }
@@ -603,7 +603,7 @@ class _FollowPageState extends State<FollowPage> {
     //             // timestamp: DateTime.now().millisecondsSinceEpoch,
     //             timestamp: datetime,
     //           );
-    //           final databaseHelper = DatabaseLocation();
+    //        //   final databaseHelper = DatabaseLocation();
     //           await databaseHelper.addLocation(locationRecord.latitude, locationRecord.longitude, locationRecord.timestamp, 1);
     //         }
     //       }

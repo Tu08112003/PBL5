@@ -47,7 +47,7 @@ class _DetailDialogState extends State<DetailDialog> {
                     ),
                     CircleAvatar(
                       radius: 50,
-                      backgroundImage: AssetImage('assets/images/avatar.jpg'), // Đường dẫn đến hình ảnh đại diện
+                      backgroundImage: AssetImage('assets/images/chiMinh.jpg'), // Đường dẫn đến hình ảnh đại diện
                     ),
                     SizedBox(height: 10),
                     Row(
@@ -55,7 +55,7 @@ class _DetailDialogState extends State<DetailDialog> {
                       children: [
                         // Spacer(),
                         Text(
-                          'Bảo Châu ',
+                          'Chị Minh',
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
