@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:iseeapp2/view/forget_pasword_page.dart';
 import 'package:iseeapp2/view/home_page.dart';
 import 'package:iseeapp2/view/sign_up.dart';
 
@@ -266,7 +267,10 @@ class _LogInState extends State<LogIn> {
             bottom: 220, // Điều chỉnh vị trí dưới cùng bên phải
             child: GestureDetector(
               onTap: () {
-                // Xử lý sự kiện khi quên mật khẩu được nhấn
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => ForgetPassword()),
+                );
               },
               child: Text(
                 'Quên mật khẩu?',
