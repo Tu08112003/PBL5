@@ -1,7 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:iseeapp2/Database/DatabaseUser.dart';
-
 import '../Database/CreateDatabase.dart';
 import 'log_in.dart';
 
@@ -151,9 +150,10 @@ class _SignUpState extends State<SignUp> {
                                 child: TextFormField(
                                   controller: _usernameController,
                                   style: TextStyle(fontSize: 18),
+                                  keyboardType: TextInputType.emailAddress,
                                   decoration: InputDecoration(
-                                    hintText: 'Số điện thoại/email', // Đặt "Tên đăng nhập" làm hint
-                                    hintStyle: TextStyle(color: Colors.grey), // Đổi màu chữ hint thành màu xám
+                                    hintText: 'Email',
+                                    hintStyle: TextStyle(color: Colors.grey),
                                     border: InputBorder.none,
                                     contentPadding: EdgeInsets.symmetric(horizontal: 4),
                                   ),
@@ -314,54 +314,69 @@ class _SignUpState extends State<SignUp> {
     );
   }
 
+  bool isValidEmail(String email) {
+    final regex = RegExp(r'^[a-zA-Z0-9._%-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$');
+    return regex.hasMatch(email);
+  }
 
   void handleSignUp()  async{
-    CreateDatabase().openDatabaseConnection();
-    // CreateDatabase().createTableWithDb();
-
+    // Ẩn bàn phím trước khi thực hiện hành động
+    FocusScope.of(context).unfocus();
     username = _usernameController.text;
-    password = _passwordController.text;
-    password_again = _passwordAgainController.text;
-    final databaseHelper = DatabaseUser();
-    var listUsername = await databaseHelper.getAllUsername();
-    if(username == '' || password == ''){
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          backgroundColor: Colors.pink,
-          content: Text('Hãy nhập đủ nội dung'),
-        ),
-      );
-    }
-    else{
-      if(password == password_again){
-        if(listUsername.contains(username))
-        {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              backgroundColor: Colors.pink,
-              content: Text('Tên đăng nhập đã tồn tại'),
-            ),
-          );
-        }
-        else{
-          databaseHelper.addUser(username, password, null);
-          _showSuccessSnackBar();
-          print("============THÀNH CÔNG===============");
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => LogIn()),
-          );
-        }
-      }
-      else{
-        // Show a snackbar or other error message
+    if(isValidEmail(username)){
+      CreateDatabase().openDatabaseConnection();
+      // CreateDatabase().createTableWithDb();
+      password = _passwordController.text;
+      password_again = _passwordAgainController.text;
+      final databaseHelper = DatabaseUser();
+      // databaseHelper.encryptExistingPasswords();
+      var listUsername = await databaseHelper.getAllUsername();
+      if(username == '' || password == ''){
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             backgroundColor: Colors.pink,
-            content: Text('Mật khẩu nhập lại không đúng!'),
+            content: Text('Hãy nhập đủ nội dung'),
           ),
         );
       }
+      else{
+        if(password == password_again){
+          if(listUsername.contains(username))
+          {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                backgroundColor: Colors.pink,
+                content: Text('Tên đăng nhập đã tồn tại'),
+              ),
+            );
+          }
+          else{
+            databaseHelper.addUser(username, password, null);
+            _showSuccessSnackBar();
+            print("============THÀNH CÔNG===============");
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => LogIn()),
+            );
+          }
+        }
+        else{
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              backgroundColor: Colors.pink,
+              content: Text('Mật khẩu nhập lại không đúng!'),
+            ),
+          );
+        }
+      }
+    }
+    else{
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          backgroundColor: Colors.pink,
+          content: Text('Email không đúng định dạng!'),
+        ),
+      );
     }
 
   }

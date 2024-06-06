@@ -12,13 +12,18 @@ import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:webview_flutter/platform_interface.dart';
 import 'package:webview_flutter/webview_flutter.dart';
-final channel = IOWebSocketChannel.connect('ws://192.168.43.96:3000');
+
+import '../Database/DatabaseCane.dart';
+// final channel = IOWebSocketChannel.connect('ws://192.168.43.96:3000');
+
 class FollowPage extends StatefulWidget {
-  const FollowPage({Key? key}) : super(key: key);
+  final int idCane;
+  const FollowPage({Key? key, required this.idCane}) : super(key: key);
 
   @override
   State<FollowPage> createState() => _FollowPageState();
-  static const String ipCam = "http://10.10.2.26";
+  // static const String ipCam = "http://10.10.2.26";
+
   // static const List<Marker> markers = [];
   // static const MapController mapController = MapController();
 }
@@ -30,7 +35,6 @@ class _FollowPageState extends State<FollowPage> {
   MapController mapController = MapController();
   List<LatLng> routpoints = [LatLng(52.05884, -1.34558)];
   bool isVisible = true;//bool isVisible = false;
-
   final dbLocationHelper = DatabaseLocation();
 
   String latitude = '';
@@ -40,32 +44,62 @@ class _FollowPageState extends State<FollowPage> {
   String _selectedMenuItem = '';
 
   int datetime = 0;
+  final databaseCaneHelper = DatabaseCane();
+  CaneRecord? caneRecord;
+  IOWebSocketChannel? channel;
+  String ipServer = '';
+  
+  String ipCam ='';
+  // late final String ipCam;
+
+  Future<void> getCane() async {
+    CaneRecord? record = await databaseCaneHelper.getCaneByID(widget.idCane);
+    print("//////////////// ---- ok1:========================" );
+    if (record != null) {
+      setState(() {
+        caneRecord = record;
+        ipServer = record.ipServer.toString();
+        print("//////////////// ---- ok2:========================" + ipServer);
+        // Kết nối WebSocket sau khi có ipServer
+        // channel = IOWebSocketChannel.connect(ipServer);
+        print("//////////////// ---- ok3:========================" );
+        if(record.ipCam != null){
+          ipCam = record.ipCam.toString();
+          print("//////////////// ipCam:" + ipCam + "---- ipServer:" + ipServer);
+        }
+        print("//////////////// ---- ipServer:" + ipServer);
+      });
+    }
+  }
+
 
   // String ipCam = "http://192.168.43.200";
-  // Sample data for different body content based on menu selection
-  final Map<String, Widget> bodyContentMap = {
-    // 'history': Text('History content'),
-    // 'directions': Text('Directions content'),
-    'camera':
-    SizedBox(
-      height: 2000,
-      width: 450,
-      child: WebView(
-        initialUrl: FollowPage.ipCam ,
-        javascriptMode: JavascriptMode.unrestricted,
-        onPageFinished: (String url) {
-          // Sau khi trang web được tải hoàn thành, bạn có thể thực hiện các thao tác tùy chỉnh ở đây
-          print('Page finished loading: $url');
-        },
-      ),
-    ),
 
+  final Map<String, Widget> bodyContentMap = {
+
+    'directions': Text('Directions content'),
+    'camera': Text('History content'),
+    // 'camera':
+    // SizedBox(
+    //   height: 2000,
+    //   width: 450,
+    //   child: WebView(
+    //     initialUrl: ipCam,
+    //     javascriptMode: JavascriptMode.unrestricted,
+    //     onPageFinished: (String url) {
+    //       // Sau khi trang web được tải hoàn thành, bạn có thể thực hiện các thao tác tùy chỉnh ở đây
+    //       print('Page finished loading: $url');
+    //     },
+    //   ),
+    // ),
   };
   @override
   void initState() {
     super.initState();
+    getCane();
     // _moveToLocation(yourLocation);
     fetchData();
+    print("//////////////// ---- ok4:========================" );
   }
   @override
   Widget build(BuildContext context) {
@@ -84,7 +118,7 @@ class _FollowPageState extends State<FollowPage> {
                 ),
                 SizedBox(width: 10), // Khoảng cách giữa avatar và tên
                 Text(
-                  'Chị Minh',
+                  caneRecord!.nickname,
                   style: TextStyle(
                     fontSize: 18,
                     color: Color(0xFF0D5E37),
@@ -119,6 +153,9 @@ class _FollowPageState extends State<FollowPage> {
                         routpoints = routpoints.sublist(0, 1);
                         markers.clear();
                         await _fetchHistoryLocation();
+                      }
+                      if(value == 'camera'){
+                        markers.clear();
                       }
                     });
                   },
@@ -306,7 +343,7 @@ class _FollowPageState extends State<FollowPage> {
                       ),
                     ],
                   ),
-                ),
+                ) ,
                 // ============================================================
                 // bodyContentMap[_selectedMenuItem == 'camera'] ??
               ],
@@ -481,7 +518,7 @@ class _FollowPageState extends State<FollowPage> {
     String locationHistory;
     String timeHistory;
     LocationRecord lastLocation;
-    final locations = await dbLocationHelper.getAllLocationsByIP(1) as List;
+    final locations = await dbLocationHelper.getAllLocationsByID(widget.idCane) as List;
     int i = 1;
 
     lastLocation = locations[locations.length - 1];
@@ -492,6 +529,7 @@ class _FollowPageState extends State<FollowPage> {
 
     // ====================================================================================================================
     // print("voo ne");
+    // channel = IOWebSocketChannel.connect(ipServer);
     // channel.stream.listen((message) async {
     //   if (message == null || message.isEmpty) {
     //     // -----------------Không có dữ liệu mới, xử lý sự im lặng
@@ -547,7 +585,7 @@ class _FollowPageState extends State<FollowPage> {
     //                 timestamp: datetime,
     //               );
     //            //   final databaseHelper = DatabaseLocation();
-    //               databaseHelper.addLocation(locationRecord.latitude, locationRecord.longitude, locationRecord.timestamp, 1);
+    //               databaseHelper.addLocation(locationRecord.latitude, locationRecord.longitude, locationRecord.timestamp, widget.idCane);
     //               print("lưu xong");
     //             }
     //           }
@@ -604,7 +642,7 @@ class _FollowPageState extends State<FollowPage> {
     //             timestamp: datetime,
     //           );
     //        //   final databaseHelper = DatabaseLocation();
-    //           await databaseHelper.addLocation(locationRecord.latitude, locationRecord.longitude, locationRecord.timestamp, 1);
+    //           await databaseHelper.addLocation(locationRecord.latitude, locationRecord.longitude, locationRecord.timestamp, widget.idCane);
     //         }
     //       }
     //     } else {
@@ -627,7 +665,7 @@ class _FollowPageState extends State<FollowPage> {
   Future<void> _fetchHistoryLocation() async{
     String locationHistory;
     String timeHistory;
-    final locations = await dbLocationHelper.getAllLocationsByIP(1) as List;
+    final locations = await dbLocationHelper.getAllLocationsByID(widget.idCane) as List;
     int i = 1;
     for (LocationRecord location in locations) {
       print(i);

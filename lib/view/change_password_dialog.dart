@@ -197,7 +197,8 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
     if (_formKey.currentState!.validate()) {
       // Lấy mật khẩu cũ từ cơ sở dữ liệu
       String? storedOldPass = await databaseUserHelper.getPasswordByUsername(widget.username);
-      if (oldPassController.text == storedOldPass) {
+      // if (oldPassController.text == storedOldPass) {
+      if (await databaseUserHelper.isCorrectUser(widget.username, oldPassController.text)) {
         // Nếu mật khẩu cũ đúng, cập nhật mật khẩu mới
         databaseUserHelper.updateUser(widget.username, null, newPassController.text, null, null);
         Navigator.of(context).pop();

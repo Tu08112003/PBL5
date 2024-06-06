@@ -273,12 +273,59 @@ class _HomePageState extends State<HomePage> {
                             decoration: ShapeDecoration(
                               shape: CircleBorder(),
                             ),
-                            child: InkWell(
+                            child: GestureDetector(
+                              onLongPress: () {
+                                showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return AlertDialog(
+                                      title: Text('Xác nhận', style: TextStyle(color: Color(0xFF0D5E37))),
+                                      content: Text('Bạn có chắc chắn muốn xóa người này không?', style: TextStyle(color: Color(0xFF0D5E37))),
+                                      actions: [
+                                        TextButton(
+                                          onPressed: () async {
+                                            List<int> idCanes = await _idCaneFuture;
+                                            if (idCanes.length == 1){
+                                              print("=================== có 1 cane thoi =============");
+                                              databaseUserHelper.updateUser(_username, null, null, -1,null);
+                                              print("=================== cập nhật =============" + idCane.toString() + "--user:" + _username);
+                                            }
+                                            else{
+                                              print("=================== hơn 1 cane =============");
+                                              databaseUserHelper.deleteCaneOfUser(_username, idCane);
+                                              print("=================== xóa =============" + idCane.toString() + "--user:" + _username);
+                                            }
+                                            // Navigator.of(context).pop();
+                                            Navigator.pushReplacement(
+                                              context,
+                                              MaterialPageRoute(builder: (context) => HomePage()),
+                                            );
+                                            ScaffoldMessenger.of(context).showSnackBar(
+                                              SnackBar(
+                                                backgroundColor: Colors.green,
+                                                content: Text('Xóa thành công!'),
+                                              ),
+                                            );
+                                          },
+                                          child: Text('Đồng ý', style: TextStyle(color: Color(0xFF0D5E37))),
+                                        ),
+                                        TextButton(
+                                          onPressed: () {
+                                            Navigator.of(context).pop();
+                                          },
+                                          child: Text('Hủy', style: TextStyle(color: Color(0xFF0D5E37)),),
+                                        ),
+                                      ],
+                                    );
+                                  },
+                                );
+                              },
+                          child: InkWell(
                               onTap: () {
                                 showDialog(
                                   context: context,
                                   builder: (BuildContext context) {
-                                    return DetailDialog(); // Hiển thị dialog
+                                    return DetailDialog(idCane: idCane);
                                   },
                                 );
                               },
@@ -296,7 +343,8 @@ class _HomePageState extends State<HomePage> {
                             ),
                           ),
                         ),
-                        SizedBox(width: 40),
+                      ),
+                      SizedBox(width: 40),
                     FloatingActionButton(
                       onPressed: () {
                         Navigator.push(

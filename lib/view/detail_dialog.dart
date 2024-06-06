@@ -1,15 +1,35 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import '../Database/DatabaseCane.dart';
+import 'edit_cane.dart';
+import 'follow_page.dart';// Giả sử bạn có một tập tin DatabaseUser.dart chứa class DatabaseUser
 
-import 'follow_page.dart';
 class DetailDialog extends StatefulWidget {
-  const DetailDialog({Key? key}) : super(key: key);
+  final int idCane;
+
+  const DetailDialog({Key? key, required this.idCane}) : super(key: key);
 
   @override
   State<DetailDialog> createState() => _DetailDialogState();
 }
 
 class _DetailDialogState extends State<DetailDialog> {
+  final databaseCaneHelper = DatabaseCane();
+  CaneRecord? caneRecord; // Biến trạng thái để lưu trữ dữ liệu
+
+  @override
+  void initState() {
+    super.initState();
+    getCane();
+  }
+
+  Future<void> getCane() async {
+    CaneRecord? record = await databaseCaneHelper.getCaneByID(widget.idCane);
+    setState(() {
+      caneRecord = record;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Dialog(
@@ -18,10 +38,9 @@ class _DetailDialogState extends State<DetailDialog> {
       ),
       elevation: 0,
       backgroundColor: Colors.transparent,
-      child: _dialogContent(context),
+      child: caneRecord != null ? _dialogContent(context) : _loadingIndicator(),
     );
   }
-
   Widget _dialogContent(BuildContext context) {
     return Stack(
       children: [
@@ -53,18 +72,24 @@ class _DetailDialogState extends State<DetailDialog> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        // Spacer(),
+                        SizedBox(width: 50),
                         Text(
-                          'Chị Minh',
+                          caneRecord!.nickname,
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                        SizedBox(height: 10),
+                        SizedBox(width: 20),
                         GestureDetector(
                           onTap: () {
-                            // Handle the icon tap event here
+                            Navigator.of(context).pop();
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return EditCane(idCane: widget.idCane);
+                              },
+                            );
                             print('Icon tapped!');
                             // You can add your custom logic here, like navigating to another screen or performing an action
                           },
@@ -150,7 +175,7 @@ class _DetailDialogState extends State<DetailDialog> {
                     onTap: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => FollowPage()),
+                        MaterialPageRoute(builder: (context) => FollowPage(idCane: widget.idCane)),
                       );
                     },
                     child: Text(
@@ -170,6 +195,10 @@ class _DetailDialogState extends State<DetailDialog> {
         ),
       ]
     );
-
+  }
+  Widget _loadingIndicator() {
+    return Center(
+      child: CircularProgressIndicator(), // Hiển thị vòng tròn loading khi dữ liệu chưa tải xong
+    );
   }
 }

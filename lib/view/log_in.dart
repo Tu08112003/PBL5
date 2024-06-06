@@ -1,3 +1,5 @@
+import 'package:encrypt/encrypt.dart';
+import 'package:encrypt/encrypt.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -165,14 +167,15 @@ class _LogInState extends State<LogIn> {
                               child: TextFormField(
                                 controller: _controller,
                                 style: TextStyle(fontSize: 18),
+                                // keyboardType: TextInputType.emailAddress,
                                 decoration: InputDecoration(
-                                  hintText: 'Email/số điện thoại', // Đặt "Tên đăng nhập" làm hint
-                                  hintStyle: TextStyle(color: Colors.grey), // Đổi màu chữ hint thành màu xám
+                                  hintText: 'Email',
+                                  hintStyle: TextStyle(color: Colors.grey),
                                   border: InputBorder.none,
                                   contentPadding: EdgeInsets.symmetric(horizontal: 4),
                                 ),
                                 onChanged: (value) {
-                                  username = value; // Update ipServer when text changes
+                                  username = value;
                                 },
                               ),
                             ),
@@ -403,35 +406,48 @@ class _LogInState extends State<LogIn> {
   }
 
   Future<void> handleLogIn() async {
+    // Ẩn bàn phím trước khi thực hiện hành động
+    FocusScope.of(context).unfocus();
     final databaseHelper = DatabaseUser();
-    if(username == '' || password == ''){
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          backgroundColor: Colors.pink,
-          content: Text('Hãy nhập đủ nội dung'),
-        ),
-      );
-    }
-    else{
-      var checkLogIn = await databaseHelper.isCorrectUser(username, password) ;
-      if(!checkLogIn)
-      {
+    // databaseHelper.hashExistingPasswords();
+// databaseHelper.test();
+// databaseHelper.test0();
+// databaseHelper.test1();
+// databaseHelper.test2();
+// databaseHelper.test3();
+
+
+print("-------------------------------------------");
+
+      if(username == '' || password == ''){
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             backgroundColor: Colors.pink,
-            content: Text('Tên đăng nhập hoặc mật khẩu ko đúng'),
+            content: Text('Hãy nhập đủ nội dung'),
           ),
         );
       }
-      else {
-        _saveSession();
-        print('========username:'+_username);
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => HomePage()),
-        );
-      }
+      else{
+        var checkLogIn = await databaseHelper.isCorrectUser(username, password) ;
+        if(!checkLogIn)
+        {
 
-    }
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              backgroundColor: Colors.pink,
+              content: Text('Tên đăng nhập hoặc mật khẩu ko đúng'),
+            ),
+          );
+        }
+        else {
+          _saveSession();
+          print('========username:'+_username);
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => HomePage()),
+          );
+        }
+
+      }
   }
 }

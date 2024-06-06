@@ -113,7 +113,7 @@ class EditProfileDialog extends StatelessWidget {
                           child: TextFormField(
                             initialValue: username,
                             decoration: InputDecoration(
-                              labelText: 'Nhập email/sđt',
+                              labelText: 'Nhập email',
                               labelStyle: TextStyle(
                                 color: Color(0xFF072516),
                               ),
