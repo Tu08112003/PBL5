@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 
 import '../Database/DatabaseUser.dart';
@@ -84,10 +86,25 @@ class _ProfileDialogState extends State<ProfileDialog> {
                     height: 5,
                   ),
                 ),
-                CircleAvatar(
-                  radius: 50,
-                  backgroundImage: AssetImage('assets/images/avatar.jpg'),
+                FutureBuilder<UserRecord?>(
+                  future: databaseUserHelper.getUserByUsername(_username),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return Center(child: CircularProgressIndicator());
+                    } else if (snapshot.hasError) {
+                      return Center(child: Text('Error: ${snapshot.error}'));
+                    } else {
+                      var user = snapshot.data!;
+                      return CircleAvatar(
+                        radius: 50,
+                        backgroundImage: user.image != null
+                            ? FileImage(File(user.image!))
+                            : AssetImage('assets/images/avatar.jpg') as ImageProvider,
+                      );
+                    }
+                  },
                 ),
+
                 SizedBox(height: 10),
                 Text(
                   user.name ?? 'Username',

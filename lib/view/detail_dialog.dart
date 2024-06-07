@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import '../Database/DatabaseCane.dart';
@@ -5,9 +7,9 @@ import 'edit_cane.dart';
 import 'follow_page.dart';// Giả sử bạn có một tập tin DatabaseUser.dart chứa class DatabaseUser
 
 class DetailDialog extends StatefulWidget {
-  final int idCane;
+  int idCane;
 
-  const DetailDialog({Key? key, required this.idCane}) : super(key: key);
+  DetailDialog({Key? key, required this.idCane}) : super(key: key);
 
   @override
   State<DetailDialog> createState() => _DetailDialogState();
@@ -64,9 +66,24 @@ class _DetailDialogState extends State<DetailDialog> {
                         height: 1,
                       ), // Container trống để tạo khoảng trống ở trên cùng
                     ),
-                    CircleAvatar(
-                      radius: 50,
-                      backgroundImage: AssetImage('assets/images/chiMinh.jpg'), // Đường dẫn đến hình ảnh đại diện
+
+                    FutureBuilder<CaneRecord?>(
+                      future: databaseCaneHelper.getCaneByID(widget.idCane),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState == ConnectionState.waiting) {
+                          return Center(child: CircularProgressIndicator());
+                        } else if (snapshot.hasError) {
+                          return Center(child: Text('Error: ${snapshot.error}'));
+                        } else {
+                          var cane = snapshot.data!;
+                          return CircleAvatar(
+                            radius: 50,
+                            backgroundImage: cane.image != null
+                                ? FileImage(File(cane.image!))
+                                : AssetImage('assets/images/chiMinh.jpg') as ImageProvider,
+                          );
+                        }
+                      },
                     ),
                     SizedBox(height: 10),
                     Row(

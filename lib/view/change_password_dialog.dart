@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:iseeapp2/Database/DatabaseUser.dart';
@@ -57,9 +59,23 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
                           height: 1,
                         ),
                       ),
-                      CircleAvatar(
-                        radius: 50,
-                        backgroundImage: AssetImage('assets/images/avatar.jpg'),
+                      FutureBuilder<UserRecord?>(
+                        future: databaseUserHelper.getUserByUsername(widget.username),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState == ConnectionState.waiting) {
+                            return Center(child: CircularProgressIndicator());
+                          } else if (snapshot.hasError) {
+                            return Center(child: Text('Error: ${snapshot.error}'));
+                          } else {
+                            var user = snapshot.data!;
+                            return CircleAvatar(
+                              radius: 50,
+                              backgroundImage: user.image != null
+                                  ? FileImage(File(user.image!))
+                                  : AssetImage('assets/images/avatar.jpg') as ImageProvider,
+                            );
+                          }
+                        },
                       ),
                       SizedBox(height: 20),
                       Container(

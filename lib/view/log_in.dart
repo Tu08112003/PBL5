@@ -442,9 +442,10 @@ print("-------------------------------------------");
         else {
           _saveSession();
           print('========username:'+_username);
-          Navigator.pushReplacement(
+          Navigator.pushAndRemoveUntil(
             context,
             MaterialPageRoute(builder: (context) => HomePage()),
+                (route) => false, // Xóa tất cả các trang trước đó trong ngăn xếp
           );
         }
 

@@ -1,18 +1,51 @@
+import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:path/path.dart' as path;
+import 'package:image_picker/image_picker.dart';
 import 'package:iseeapp2/Database/DatabaseUser.dart';
 
 import '../session/SessionManager.dart';
 import 'follow_page.dart';
-
-class EditProfileDialog extends StatelessWidget {
+import 'home_page.dart';
+class EditProfileDialog extends StatefulWidget {
   String username;
+  EditProfileDialog({Key? key, required this.username}) : super(key: key);
+  @override
+  State<EditProfileDialog> createState() => _EditProfileDialogState();
+}
+
+class _EditProfileDialogState extends State<EditProfileDialog> {
   String name = "";
   String newUsername = "";
   final databaseUserHelper = DatabaseUser();
-  EditProfileDialog({required this.username});
+  String? imagePath;
   // late final user = databaseUserHelper.getUserByUsername(username);
+  Future<void> _pickImage() async {
+    print("vào");
+    final picker = ImagePicker();
+    final pickedImage = await picker.pickImage(source: ImageSource.gallery);
+    print("vào1");
+    if (pickedImage != null) {
+      print("vào2");
+      final appDir = await getApplicationDocumentsDirectory();
+      final fileName = path.basename(pickedImage.path);
+      final savedImage = await File(pickedImage.path).copy('${appDir.path}/$fileName');
 
+      setState(() {
+        print("vào4");
+        imagePath = savedImage.path;
+      });
+      print("vào3");
+      // Lưu đường dẫn ảnh vào cơ sở dữ liệu
+      // await databaseUserHelper.updateUserAvatar(widget.username, savedImage.path);
+    }else {
+      // Trường hợp người dùng không chọn ảnh, không làm gì cả.
+      print("Người dùng đã hủy chọn ảnh");
+    }
+  }
   @override
   Widget build(BuildContext context) {
     return Dialog(
@@ -39,37 +72,36 @@ class EditProfileDialog extends StatelessWidget {
                       shape: BoxShape.rectangle,
                       borderRadius: BorderRadius.circular(20.0),
                     ),
-                    child: Column(
-                      // mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Expanded(
-                          child: Container(
-                            height: 1,
-                          ), // Container trống để tạo khoảng trống ở trên cùng
-                        ),
-                        CircleAvatar(
-                          radius: 50,
-                          backgroundImage: AssetImage('assets/images/avatar.jpg'), // Đường dẫn đến hình ảnh đại diện
-                        ),
-                        SizedBox(height: 20),
-                        // Text(
-                        //   'Họ tên',
-                        //   style: TextStyle(
-                        //     fontSize: 18,
-                        //     fontWeight: FontWeight.bold,
-                        //   ),
-                        // ),
-                        FutureBuilder<UserRecord?>(
-                          future: databaseUserHelper.getUserByUsername(username),
-                          builder: (context, snapshot) {
-                            if (snapshot.connectionState == ConnectionState.waiting) {
-                              return Center(child: CircularProgressIndicator());
-                            } else if (snapshot.hasError) {
-                              return Center(child: Text('Error: ${snapshot.error}'));
-                            } else {
-                              var user = snapshot.data!;
-                              return Container(
+                    child: FutureBuilder<UserRecord?>(
+                      future: databaseUserHelper.getUserByUsername(widget.username),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState == ConnectionState.waiting) {
+                          return Center(child: CircularProgressIndicator());
+                        } else if (snapshot.hasError) {
+                          return Center(child: Text('Error: ${snapshot.error}'));
+                        } else {
+                          var user = snapshot.data!;
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Expanded(
+                                child: Container(
+                                  height: 1,
+                                ), // Container trống để tạo khoảng trống ở trên cùng
+                              ),
+                              GestureDetector(
+                                onTap: _pickImage,
+                                child: CircleAvatar(
+                                  radius: 50,
+                                  backgroundImage: imagePath != null
+                                      ? FileImage(File(imagePath!))
+                                      : user.image != null
+                                        ? FileImage(File(user.image!))
+                                        : AssetImage('assets/images/avatar.jpg') as ImageProvider,
+                                ),
+                              ),
+                              SizedBox(height: 20),
+                              Container(
                                 width: 240,
                                 child: TextFormField(
                                   initialValue: user.name ?? 'Họ tên',
@@ -96,59 +128,53 @@ class EditProfileDialog extends StatelessWidget {
                                     name = newValue;
                                   },
                                 ),
-                              );
-                            }
-                          },
-                        ),
-                        SizedBox(height: 20),
-                        // Text(
-                        //   username,
-                        //   style: TextStyle(
-                        //     fontSize: 18,
-                        //     fontWeight: FontWeight.bold,
-                        //   ),
-                        // ),
-                        Container(
-                          width: 240,
-                          child: TextFormField(
-                            initialValue: username,
-                            decoration: InputDecoration(
-                              labelText: 'Nhập email',
-                              labelStyle: TextStyle(
-                                color: Color(0xFF072516),
                               ),
-                              border: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                  color: Color(0xFF0D5E37),
+                              SizedBox(height: 20),
+                              // Text(
+                              //   username,
+                              //   style: TextStyle(
+                              //     fontSize: 18,
+                              //     fontWeight: FontWeight.bold,
+                              //   ),
+                              // ),
+                              Container(
+                                width: 240,
+                                child: TextFormField(
+                                  initialValue: widget.username,
+                                  decoration: InputDecoration(
+                                    labelText: 'Nhập email',
+                                    labelStyle: TextStyle(
+                                      color: Color(0xFF072516),
+                                    ),
+                                    border: OutlineInputBorder(
+                                      borderSide: BorderSide(
+                                        color: Color(0xFF0D5E37),
+                                      ),
+                                    ),
+                                    focusedBorder: OutlineInputBorder(
+                                      borderSide: BorderSide(
+                                        color: Color(0xFF0D5E37),
+                                      ),
+                                    ),
+                                    errorBorder: OutlineInputBorder(
+                                      borderSide: BorderSide(
+                                        color: Colors.red,
+                                      ),
+                                    ),
+                                  ),
+                                  style: TextStyle(
+                                    color: Color(0xFF072516),
+                                  ),
+                                  onChanged: (newValue) {
+                                    newUsername = newValue;
+                                  },
                                 ),
                               ),
-                              focusedBorder: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                  color: Color(0xFF0D5E37),
-                                ),
-                              ),
-                              errorBorder: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                  color: Colors.red,
-                                ),
-                              ),
-                            ),
-                            style: TextStyle(
-                              color: Color(0xFF072516),
-                            ),
-                            onChanged: (newValue) {
-                              newUsername = newValue;
-                            },
-                          ),
-                        ),
-                        SizedBox(height: 100),
-                        // ElevatedButton(
-                        //   onPressed: () {
-                        //     // Xử lý sự kiện khi nút được nhấn
-                        //   },
-                        //   child: Text('Theo dõi'),
-                        // ),
-                      ],
+                              SizedBox(height: 100),
+                            ],
+                          );
+                        }
+                      },
                     ),
                   ),
                   Positioned(
@@ -234,31 +260,39 @@ class EditProfileDialog extends StatelessWidget {
 
     if (newUsername == ''){
       if(name != ""){
-        databaseUserHelper.updateUser(username,null, null, null, name);
+        databaseUserHelper.updateUser(widget.username,null, null, null, name);
       }
       else{
-        databaseUserHelper.updateUser(username,null, null, null, null);
+        databaseUserHelper.updateUser(widget.username,null, null, null, null);
       }
     }
     else{
       if(name != ""){
-        databaseUserHelper.updateUser(username,newUsername, null, null, name);
-        username = newUsername;
-        print("-------Trước khi lưu----username1"+newUsername + "====" +username + "-------" );
+        databaseUserHelper.updateUser(widget.username,newUsername, null, null, name);
+        widget.username = newUsername;
+        print("-------Trước khi lưu----username1"+newUsername + "====" +widget.username + "-------" );
         SessionManager.removeSession('username');
-        SessionManager.saveSession('username', username);
+        SessionManager.saveSession('username', widget.username);
       }
       else{
-        databaseUserHelper.updateUser(username,newUsername, null, null, null);
-        username = newUsername;
-        print("-------Trước khi lưu----username2"+newUsername + "====" +username + "-------" );
+        databaseUserHelper.updateUser(widget.username,newUsername, null, null, null);
+        widget.username = newUsername;
+        print("-------Trước khi lưu----username2"+newUsername + "====" +widget.username + "-------" );
         SessionManager.removeSession('username');
-        SessionManager.saveSession('username', username);
+        SessionManager.saveSession('username', widget.username);
       }
     }
+    if(imagePath != null){
+      databaseUserHelper.updateUserAvatar(widget.username, imagePath!);
+    }
     _showSuccessSnackBar(context);
-    Navigator.of(context).pop();
+    // Navigator.of(context).pop();
 
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (context) => HomePage()),
+          (route) => false, // Xóa tất cả các trang trước đó trong ngăn xếp
+    );
   }
 }
 

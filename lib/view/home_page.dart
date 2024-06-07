@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:geocoding/geocoding.dart';
@@ -8,6 +10,7 @@ import 'package:latlong2/latlong.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:sqflite/sqlite_api.dart';
 
+import '../Database/DatabaseCane.dart';
 import '../session/SessionManager.dart';
 import 'detail_dialog.dart';
 import 'log_in.dart';
@@ -26,6 +29,7 @@ class _HomePageState extends State<HomePage> {
   final MapController mapController = MapController();
   String _username = '';
   final databaseUserHelper = DatabaseUser();
+  final databaseCaneHelper = DatabaseCane();
   late Future<List<int>> _idCaneFuture;
   @override
   void initState() {
@@ -156,16 +160,30 @@ class _HomePageState extends State<HomePage> {
                         },
                       );
                     },
-                    child: Container(
-                      width: 40,
-                      height: 40,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        image: DecorationImage(
-                          image: AssetImage('assets/images/avatar.jpg'),
-                          fit: BoxFit.cover,
-                        ),
-                      ),
+                    child: FutureBuilder<UserRecord?>(
+                      future: databaseUserHelper.getUserByUsername(_username),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState == ConnectionState.waiting) {
+                          return Center(child: CircularProgressIndicator());
+                        } else if (snapshot.hasError) {
+                          return Center(child: Text('Error: ${snapshot.error}'));
+                        } else {
+                          var user = snapshot.data!;
+                          return Container(
+                            width: 40,
+                            height: 40,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              image: DecorationImage(
+                                image: user.image != null
+                                    ? FileImage(File(user.image!))
+                                    : AssetImage('assets/images/avatar.jpg') as ImageProvider,
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                          );
+                        }
+                      },
                     ),
                   ),
                 ),
@@ -329,16 +347,41 @@ class _HomePageState extends State<HomePage> {
                                   },
                                 );
                               },
-                              child: Container(
-                                width: 64,
-                                height: 64,
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  image: DecorationImage(
-                                    image: AssetImage('assets/images/chiMinh.jpg'),
-                                    fit: BoxFit.cover,
-                                  ),
-                                ),
+                              // child: Container(
+                              //   width: 64,
+                              //   height: 64,
+                              //   decoration: BoxDecoration(
+                              //     shape: BoxShape.circle,
+                              //     image: DecorationImage(
+                              //       image: AssetImage('assets/images/chiMinh.jpg'),
+                              //       fit: BoxFit.cover,
+                              //     ),
+                              //   ),
+                              // ),
+                              child: FutureBuilder<CaneRecord?>(
+                                future: databaseCaneHelper.getCaneByID(idCane),
+                                builder: (context, snapshot) {
+                                  if (snapshot.connectionState == ConnectionState.waiting) {
+                                    return Center(child: CircularProgressIndicator());
+                                  } else if (snapshot.hasError) {
+                                    return Center(child: Text('Error: ${snapshot.error}'));
+                                  } else {
+                                    var cane = snapshot.data!;
+                                    return Container(
+                                      width: 64,
+                                      height: 64,
+                                      decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        image: DecorationImage(
+                                          image: cane.image != null
+                                              ? FileImage(File(cane.image!))
+                                              : AssetImage('assets/images/chiMinh.jpg') as ImageProvider,
+                                          fit: BoxFit.cover,
+                                        ),
+                                      ),
+                                   );
+                                  }
+                                },
                               ),
                             ),
                           ),
