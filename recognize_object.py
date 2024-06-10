@@ -5,7 +5,8 @@ from time import time
 import requests
 from ultralytics import YOLO
 import supervision as sv
-
+import urequests
+import json
 class ObjectDetection:
 
     def __init__(self, url=None):
@@ -17,7 +18,7 @@ class ObjectDetection:
         self.box_annotator = sv.BoxAnnotator(sv.ColorPalette.default(), thickness=3, text_thickness=3, text_scale=1.5)
     
     def load_model(self):
-        model = YOLO("best.pt")  
+        model = YOLO("F:\\PBL5\\best.pt")  
         model.fuse()
         return model
 
@@ -28,7 +29,7 @@ class ObjectDetection:
     def plot_bboxes(self, results, frame):
         xyxys = []
         confidences = []
-        class_ids = []
+        class_ids = [] 
         
         # Extract detections for person class
         for result in results:
@@ -53,7 +54,8 @@ class ObjectDetection:
         # Format custom labels
         self.labels = [f"{self.CLASS_NAMES_DICT[class_id]} {confidence:0.2f}"
                        for confidence, class_id in zip(detections.confidence, detections.class_id)]
-        
+        print(self.labels)
+        send_detection_result(self.labels)
         # Annotate and display frame
         frame = self.box_annotator.annotate(scene=frame, detections=detections, labels=self.labels)
         return frame
@@ -81,7 +83,29 @@ class ObjectDetection:
         else:
             raise ValueError("URL must be provided.")
 
+
+# Hàm gửi kết quả nhận dạng về ESP32
+def send_detection_result(results):
+    # Danh sách các nhãn cần lọc
+    labels_to_filter = ["table","sharps","person","stair","carriage","door","chair","wall"]
+    
+    # Lọc chỉ những nhãn thuộc danh sách cần lọc
+    filtered_results = [result.split(' ')[0] for result in results if any(label in result for label in labels_to_filter)]
+
+    # Địa chỉ IP của ESP32
+    server_address = "http://192.168.1.5/detection"
+    print(filtered_results)
+    result={"result":filtered_results}
+    try:
+        response = requests.get(server_address, params=result)
+        print("HTTP Response code:", response.status_code)
+    except Exception as e:
+        print("Error:", e)
+
+
+
 # Sử dụng ESP32-CAM qua URL
 url = 'http://192.168.43.179/cam-custom.jpg'  # Đường link ảnh từ ESP32
 detector = ObjectDetection(url=url)
 detector()
+

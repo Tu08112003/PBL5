@@ -6,7 +6,7 @@ from ultralytics import YOLO
 # Function to perform prediction using YOLO model
 def predict_image():
     # Load the YOLO model
-    model = YOLO("C:/Users/ACER/Documents/PBL5/best.pt")
+    model = YOLO("F:\\PBL5\\best.pt")
     # Get the path of the selected image
     image_path = filedialog.askopenfilename()
     
