@@ -52,10 +52,10 @@ void connectToWiFi() {
     Serial.print(".");
   }
   Serial.println("Connected!");
-  esp32CAM_IP = WiFi.localIP().toString();
-  Serial.print("ESP32-CAM IP: ");
-  Serial.println(esp32CAM_IP); 
-  sendESPToServer(esp32CAM_IP);
+  // esp32CAM_IP = WiFi.localIP().toString();
+  // Serial.print("ESP32-CAM IP: ");
+  // Serial.println(esp32CAM_IP); 
+  // sendESPToServer(esp32CAM_IP);
 }
 
 void sendDataToServer(String latitude, String longitude) {
@@ -88,35 +88,30 @@ void sendDataToServer(String latitude, String longitude) {
   }
 }
 
-void sendESPToServer(String ipESP) {
-//   Serial.print("Data send:");
-//   Serial.println(ipESP);
-  WiFiClient client;
-  if (client.connect(serverAddress, serverPort)) {
-    // Serial.println("Sending data to server...");
-    String data = "ip=" + ipESP;
-    // Serial.println(data);
-    client.print("POST /send_ip_esp HTTP/1.1\r\n");
-    client.print("Host: ");
-    client.print(serverAddress);
-    client.print("\r\n");
-    client.print("Content-Type: application/x-www-form-urlencoded\r\n");
-    client.print("Content-Length: ");
-    client.print(data.length());
-    client.print("\r\n\r\n");
-    client.print(data);
-    Serial.println("Data sent successfully!");
+// void sendESPToServer(String ipESP) {
+//   WiFiClient client;
+//   if (client.connect(serverAddress, serverPort)) {
+//     String data = "ip=" + ipESP;
+//     client.print("POST /send_ip_esp HTTP/1.1\r\n");
+//     client.print("Host: ");
+//     client.print(serverAddress);
+//     client.print("\r\n");
+//     client.print("Content-Type: application/x-www-form-urlencoded\r\n");
+//     client.print("Content-Length: ");
+//     client.print(data.length());
+//     client.print("\r\n\r\n");
+//     client.print(data);
+//     Serial.println("Data sent successfully!");
 
-    // Đợi và đọc phản hồi từ server
-    while (client.connected()) {
-      String line = client.readStringUntil('\n');
-      Serial.println(line);
-    }
-    
-    // Đóng kết nối
-    client.stop();
-    Serial.println("Connection closed.");
-  } else {
-    Serial.println("Failed to connect to server!");
-  }
-}
+//     // Đợi và đọc phản hồi từ server
+//     while (client.connected()) {
+//       String line = client.readStringUntil('\n');
+//       Serial.println(line);
+//     }
+//     // Đóng kết nối
+//     client.stop();
+//     Serial.println("Connection closed.");
+//   } else {
+//     Serial.println("Failed to connect to server!");
+//   }
+// }
