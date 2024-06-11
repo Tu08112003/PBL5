@@ -1,0 +1,4 @@
+train: C:/Users/ACER/Documents/PBL5/train
+val: C:/Users/ACER/Documents/PBL5/val
+nc: 8
+names: ['chair','table','person','door','sharps','stair','carriage','wall']
