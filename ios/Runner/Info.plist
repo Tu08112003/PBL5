@@ -12,6 +12,14 @@
 	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+    <string>Need location when in use</string>
+    <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+    <string>Always and when in use!</string>
+    <key>NSLocationUsageDescription</key>
+    <string>Older devices need location.</string>
+    <key>NSLocationAlways UsageDescription</key>
+    <string>Older devices need location.</string>
 	<key>CFBundleName</key>
 	<string>iseeapp2</string>
 	<key>CFBundlePackageType</key>
@@ -45,5 +53,8 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+
+	<key>NSCameraUsageDescription</key>
+    <string>Ứng dụng cần quyền truy cập camera để quét QR Code</string>
 </dict>
 </plist>

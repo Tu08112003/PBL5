@@ -22,7 +22,8 @@ class WebViewWidget extends StatefulWidget {
 }
 
 class _WebViewWidgetState extends State<WebViewWidget> {
-  final String initialUrl = "http://192.168.43.179/";
+  final String initialUrl = "http://192.168.43.24";
+  // final String initialUrl = "http://10.10.2.26";
 
   @override
   Widget build(BuildContext context) {

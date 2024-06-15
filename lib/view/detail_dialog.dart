@@ -192,7 +192,8 @@ class _DetailDialogState extends State<DetailDialog> {
                     onTap: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => FollowPage(idCane: widget.idCane)),
+                        // MaterialPageRoute(builder: (context) => FollowPage(idCane: widget.idCane)),
+                        MaterialPageRoute(builder: (context) => FollowPage(caneRecord: caneRecord!)),
                       );
                     },
                     child: Text(

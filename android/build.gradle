@@ -1,3 +1,17 @@
+buildscript {
+    ext.kotlin_version = '1.9.23'
+//    ext.kotlin_version = '1.5.10'
+    repositories {
+        google()
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:4.2.2' // hoặc bản mới nhất
+        classpath 'com.google.gms:google-services:4.4.1'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+//        compile 'com.google.android.gms:play-services-location:21.2.0'
+    }
+}
 allprojects {
     repositories {
         google()

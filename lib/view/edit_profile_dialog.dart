@@ -66,7 +66,7 @@ class _EditProfileDialogState extends State<EditProfileDialog> {
             child: Stack(
                 children: [
                   Container(
-                    // padding: EdgeInsets.all(20),
+                    padding: EdgeInsets.all(20),
                     decoration: BoxDecoration(
                       color: Colors.white,
                       shape: BoxShape.rectangle,
@@ -170,7 +170,46 @@ class _EditProfileDialogState extends State<EditProfileDialog> {
                                   },
                                 ),
                               ),
-                              SizedBox(height: 100),
+                              SizedBox(height: 20),
+                              Material(
+                                elevation: 4, // Độ nổi bật của nút
+                                borderRadius: BorderRadius.circular(30),
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(30),
+                                    color: Color(0xFF0D5E37),
+                                  ),
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      // Xử lý sự kiện khi nút được nhấn
+                                    },
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: Colors.transparent, // Đặt màu nền của nút là trong suốt
+                                      shadowColor: Colors.transparent, // Đặt màu viền nút là trong suốt
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(30),
+                                      ),
+                                    ),
+                                    child: Padding(
+                                      padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                                      child: GestureDetector(
+                                        onTap: () {
+                                          _handleSaveChangeProfile(context);
+                                        },
+                                        child: Text(
+                                          'Lưu thay đổi',
+                                          style: TextStyle(
+                                            fontSize: 18,
+                                            fontFamily: 'Inter',
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+
+                                  ),
+                                ),
+                              ),
                             ],
                           );
                         }
@@ -199,49 +238,49 @@ class _EditProfileDialogState extends State<EditProfileDialog> {
                 ]
             ),
           ),
-          Positioned(
-            bottom: 20,
-            right: 70,
-            child: Material(
-              elevation: 4, // Độ nổi bật của nút
-              borderRadius: BorderRadius.circular(30),
-              child: Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(30),
-                  color: Color(0xFF0D5E37),
-                ),
-                child: ElevatedButton(
-                  onPressed: () {
-                    // Xử lý sự kiện khi nút được nhấn
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.transparent, // Đặt màu nền của nút là trong suốt
-                    shadowColor: Colors.transparent, // Đặt màu viền nút là trong suốt
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30),
-                    ),
-                  ),
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                    child: GestureDetector(
-                      onTap: () {
-                        _handleSaveChangeProfile(context);
-                      },
-                      child: Text(
-                        'Lưu thay đổi',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontFamily: 'Inter',
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
-                  ),
-
-                ),
-              ),
-            ),
-          ),
+          // Positioned(
+          //   bottom: 20,
+          //   right: 70,
+          //   child: Material(
+          //     elevation: 4, // Độ nổi bật của nút
+          //     borderRadius: BorderRadius.circular(30),
+          //     child: Container(
+          //       decoration: BoxDecoration(
+          //         borderRadius: BorderRadius.circular(30),
+          //         color: Color(0xFF0D5E37),
+          //       ),
+          //       child: ElevatedButton(
+          //         onPressed: () {
+          //           // Xử lý sự kiện khi nút được nhấn
+          //         },
+          //         style: ElevatedButton.styleFrom(
+          //           backgroundColor: Colors.transparent, // Đặt màu nền của nút là trong suốt
+          //           shadowColor: Colors.transparent, // Đặt màu viền nút là trong suốt
+          //           shape: RoundedRectangleBorder(
+          //             borderRadius: BorderRadius.circular(30),
+          //           ),
+          //         ),
+          //         child: Padding(
+          //           padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+          //           child: GestureDetector(
+          //             onTap: () {
+          //               _handleSaveChangeProfile(context);
+          //             },
+          //             child: Text(
+          //               'Lưu thay đổi',
+          //               style: TextStyle(
+          //                 fontSize: 18,
+          //                 fontFamily: 'Inter',
+          //                 color: Colors.white,
+          //               ),
+          //             ),
+          //           ),
+          //         ),
+          //
+          //       ),
+          //     ),
+          //   ),
+          // ),
         ]
     );
 

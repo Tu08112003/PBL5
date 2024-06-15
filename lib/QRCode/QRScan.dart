@@ -7,6 +7,7 @@ import 'package:iseeapp2/Database/DatabaseUser.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 import 'dart:io' show Platform;
 
+import '../Database/DatabaseLocation.dart';
 import '../session/SessionManager.dart';
 import '../view/home_page.dart';
 class QRScan extends StatefulWidget {
@@ -22,6 +23,7 @@ class _QRScanState extends State<QRScan> {
   TextEditingController nicknameController = TextEditingController();
   final databaseCaneHelper = DatabaseCane();
   final databaseUserHelper = DatabaseUser();
+  final databaseLocationHelper = DatabaseLocation();
   String _username = '';
   String password = '';
   late Future<List<int>> _idCaneFuture;
@@ -166,6 +168,13 @@ class _QRScanState extends State<QRScan> {
                                     _idCaneFuture = databaseUserHelper.getIdCaneByUsername(_username);
                                     _showSuccessSnackBar();
 
+
+
+                                    print("----- add location cho ne");
+                                    databaseLocationHelper.addLocationForExistServer(result!.code!, idCane);
+
+
+
                                     // Navigator.pop(context);
                                     Navigator.pushReplacement(
                                       context,
@@ -176,8 +185,15 @@ class _QRScanState extends State<QRScan> {
 
                                     password = (await databaseUserHelper.getPasswordByUsername(_username))!;
                                     print("+++++ thêm mới ++++ pass:" + password);
-                                    await databaseUserHelper.addUser(_username, password, idCane);
+                                    await databaseUserHelper.addCaneOfUser(_username, password, idCane);
                                     _idCaneFuture = databaseUserHelper.getIdCaneByUsername(_username);
+
+
+
+                                    print("----- add location cho ne1");
+                                    databaseLocationHelper.addLocationForExistServer(result!.code!, idCane);
+
+
 
                                     _showSuccessSnackBar();
                                     // Navigator.pop(context);

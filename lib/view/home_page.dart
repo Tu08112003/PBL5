@@ -78,7 +78,7 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    _getCurrentLocation();
+    // _getCurrentLocation();
     return Scaffold(
       backgroundColor: const Color(0xFFB1FFD9),
 

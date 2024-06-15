@@ -239,7 +239,7 @@ import 'package:latlong2/latlong.dart';
 
 // Đường link API
 // final String apiUrl = 'http://192.168.43.96:3000/get_location';
-final channel = IOWebSocketChannel.connect('ws://192.168.83.96:3000');
+final channel = IOWebSocketChannel.connect('ws://192.168.211.96:3000');
 // final channel = IOWebSocketChannel.connect('ws://10.10.3.11:3000');
 
 class MapPageDemo extends StatefulWidget {

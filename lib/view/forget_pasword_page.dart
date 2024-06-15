@@ -234,7 +234,7 @@ class _ForgetPasswordState extends State<ForgetPassword> {
                           onPressed: () => sendOtp(_emailController.text),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: sendOTP == false ? Color(0xFF0D5E37) : Color(
-                                0xFFEAFF00),
+                                0xFF009688),
                             padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(24),

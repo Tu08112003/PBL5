@@ -18,7 +18,7 @@ class EditCane extends StatefulWidget {
 
 class _EditCaneState extends State<EditCane> {
   String nickname = "";
-  String ipServer = "";
+  // String ipServer = "";
   String ipCam = "";
   String newIpCam = "initial";
   final databaseCaneHelper = DatabaseCane();
@@ -61,7 +61,8 @@ class _EditCaneState extends State<EditCane> {
     return Stack(
         children: [
           Container(
-            constraints: BoxConstraints(maxHeight: 560, maxWidth: 300),
+            // constraints: BoxConstraints(maxHeight: 560, maxWidth: 300),
+            constraints: BoxConstraints(maxHeight: 450, maxWidth: 300),
             child: Form(
               key: _formKey,
               child: Stack(
@@ -138,41 +139,41 @@ class _EditCaneState extends State<EditCane> {
                                   ),
                                 ),
                                 SizedBox(height: 20),
-                                Container(
-                                  width: 240,
-                                  child: TextFormField(
-                                    initialValue: cane.ipServer,
-                                    decoration: InputDecoration(
-                                      labelText: 'IP Server',
-                                      border: OutlineInputBorder(
-                                        borderSide: BorderSide(
-                                          color: Color(0xFF072516),
-                                        ),
-                                      ),
-                                      focusedBorder: OutlineInputBorder(
-                                        borderSide: BorderSide(
-                                          color: Color(0xFF0D5E37),
-                                        ),
-                                      ),
-                                      errorBorder: OutlineInputBorder(
-                                        borderSide: BorderSide(
-                                          color: Colors.red,
-                                        ),
-                                      ),
-                                      labelStyle: TextStyle(color: Color(0xFF072516)),
-                                    ),
-                                    onChanged: (newValue) {
-                                      ipServer = newValue;
-                                    },
-                                    validator: (value) {
-                                      if (value == null || value.isEmpty) {
-                                        return 'Không được để trồng IP Server!';
-                                      }
-                                      return null;
-                                    },
-                                  ),
-                                ),
-                                SizedBox(height: 20),
+                                // Container(
+                                //   width: 240,
+                                //   child: TextFormField(
+                                //     initialValue: cane.ipServer,
+                                //     decoration: InputDecoration(
+                                //       labelText: 'IP Server',
+                                //       border: OutlineInputBorder(
+                                //         borderSide: BorderSide(
+                                //           color: Color(0xFF072516),
+                                //         ),
+                                //       ),
+                                //       focusedBorder: OutlineInputBorder(
+                                //         borderSide: BorderSide(
+                                //           color: Color(0xFF0D5E37),
+                                //         ),
+                                //       ),
+                                //       errorBorder: OutlineInputBorder(
+                                //         borderSide: BorderSide(
+                                //           color: Colors.red,
+                                //         ),
+                                //       ),
+                                //       labelStyle: TextStyle(color: Color(0xFF072516)),
+                                //     ),
+                                //     onChanged: (newValue) {
+                                //       ipServer = newValue;
+                                //     },
+                                //     validator: (value) {
+                                //       if (value == null || value.isEmpty) {
+                                //         return 'Không được để trồng IP Server!';
+                                //       }
+                                //       return null;
+                                //     },
+                                //   ),
+                                // ),
+                                // SizedBox(height: 20),
                                 Container(
                                   width: 240,
                                   child: TextFormField(
@@ -201,8 +202,47 @@ class _EditCaneState extends State<EditCane> {
                                     },
                                   ),
                                 ),
-                                SizedBox(height: 100),
+                                SizedBox(height: 20),
+                                Material(
+                                  elevation: 4, // Độ nổi bật của nút
+                                  borderRadius: BorderRadius.circular(30),
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(30),
+                                      color: Color(0xFF0D5E37),
+                                    ),
+                                    child: ElevatedButton(
+                                      onPressed: () {
+                                        // Xử lý sự kiện khi nút được nhấn
+                                      },
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: Colors.transparent, // Đặt màu nền của nút là trong suốt
+                                        shadowColor: Colors.transparent, // Đặt màu viền nút là trong suốt
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(30),
+                                        ),
+                                      ),
+                                      child: Padding(
+                                        padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                                        child: GestureDetector(
+                                          onTap: () {
+                                            _handleSaveChange(context);
+                                          },
+                                          child: Text(
+                                            'Lưu thay đổi',
+                                            style: TextStyle(
+                                              fontSize: 18,
+                                              fontFamily: 'Inter',
+                                              color: Colors.white,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
 
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(height: 20),
                               ],
                             );
 
@@ -233,56 +273,56 @@ class _EditCaneState extends State<EditCane> {
               ),
             ),
           ),
-          Positioned(
-            bottom: 20,
-            right: 70,
-            child: Material(
-              elevation: 4, // Độ nổi bật của nút
-              borderRadius: BorderRadius.circular(30),
-              child: Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(30),
-                  color: Color(0xFF0D5E37),
-                ),
-                child: ElevatedButton(
-                  onPressed: () {
-                    // Xử lý sự kiện khi nút được nhấn
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.transparent, // Đặt màu nền của nút là trong suốt
-                    shadowColor: Colors.transparent, // Đặt màu viền nút là trong suốt
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30),
-                    ),
-                  ),
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                    child: GestureDetector(
-                      onTap: () {
-                        _handleSaveChange(context);
-                      },
-                      child: Text(
-                        'Lưu thay đổi',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontFamily: 'Inter',
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
-                  ),
-
-                ),
-              ),
-            ),
-          ),
+          // Positioned(
+          //   bottom: 20,
+          //   right: 70,
+          //   child: Material(
+          //     elevation: 4, // Độ nổi bật của nút
+          //     borderRadius: BorderRadius.circular(30),
+          //     child: Container(
+          //       decoration: BoxDecoration(
+          //         borderRadius: BorderRadius.circular(30),
+          //         color: Color(0xFF0D5E37),
+          //       ),
+          //       child: ElevatedButton(
+          //         onPressed: () {
+          //           // Xử lý sự kiện khi nút được nhấn
+          //         },
+          //         style: ElevatedButton.styleFrom(
+          //           backgroundColor: Colors.transparent, // Đặt màu nền của nút là trong suốt
+          //           shadowColor: Colors.transparent, // Đặt màu viền nút là trong suốt
+          //           shape: RoundedRectangleBorder(
+          //             borderRadius: BorderRadius.circular(30),
+          //           ),
+          //         ),
+          //         child: Padding(
+          //           padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+          //           child: GestureDetector(
+          //             onTap: () {
+          //               _handleSaveChange(context);
+          //             },
+          //             child: Text(
+          //               'Lưu thay đổi',
+          //               style: TextStyle(
+          //                 fontSize: 18,
+          //                 fontFamily: 'Inter',
+          //                 color: Colors.white,
+          //               ),
+          //             ),
+          //           ),
+          //         ),
+          //
+          //       ),
+          //     ),
+          //   ),
+          // ),
         ]
     );
   }
 
   void _handleSaveChange(BuildContext context) async {
     if (_formKey.currentState!.validate()){
-      if(ipServer == ""){
+      // if(ipServer == ""){
         if(nickname == ""){
           print("---------0: ipcam:"+ipCam+"-new:"+newIpCam);
           if(newIpCam == "initial"){
@@ -307,33 +347,33 @@ class _EditCaneState extends State<EditCane> {
             databaseCaneHelper.updateCane(widget.idCane, null, newIpCam, nickname);
           }
         }
-      }
-      else{
-        if(nickname == ""){
-          print("---------2: ipcam:"+ipCam+"-new:"+newIpCam);
-          if(newIpCam == "initial"){
-            databaseCaneHelper.updateCane(widget.idCane, ipServer, null, null);
-          }
-          else if (newIpCam == ""){
-            databaseCaneHelper.updateCane(widget.idCane, ipServer, "-1", null);
-          }
-          else{
-            databaseCaneHelper.updateCane(widget.idCane, ipServer, newIpCam, null);
-          }
-        }
-        else{
-          print("---------3: ipcam:"+ipCam+"-new:"+newIpCam);
-          if(newIpCam == "initial"){
-            databaseCaneHelper.updateCane(widget.idCane, ipServer, null, nickname);
-          }
-          else if (newIpCam == ""){
-            databaseCaneHelper.updateCane(widget.idCane, ipServer, "-1", nickname);
-          }
-          else{
-            databaseCaneHelper.updateCane(widget.idCane, ipServer, newIpCam, nickname);
-          }
-        }
-      }
+      // }
+      // else{
+      //   if(nickname == ""){
+      //     print("---------2: ipcam:"+ipCam+"-new:"+newIpCam);
+      //     if(newIpCam == "initial"){
+      //       databaseCaneHelper.updateCane(widget.idCane, ipServer, null, null);
+      //     }
+      //     else if (newIpCam == ""){
+      //       databaseCaneHelper.updateCane(widget.idCane, ipServer, "-1", null);
+      //     }
+      //     else{
+      //       databaseCaneHelper.updateCane(widget.idCane, ipServer, newIpCam, null);
+      //     }
+      //   }
+      //   else{
+      //     print("---------3: ipcam:"+ipCam+"-new:"+newIpCam);
+      //     if(newIpCam == "initial"){
+      //       databaseCaneHelper.updateCane(widget.idCane, ipServer, null, nickname);
+      //     }
+      //     else if (newIpCam == ""){
+      //       databaseCaneHelper.updateCane(widget.idCane, ipServer, "-1", nickname);
+      //     }
+      //     else{
+      //       databaseCaneHelper.updateCane(widget.idCane, ipServer, newIpCam, nickname);
+      //     }
+      //   }
+      // }
       if(imagePath != null){
         databaseCaneHelper.updateCaneAvatar(widget.idCane, imagePath!);
       }
